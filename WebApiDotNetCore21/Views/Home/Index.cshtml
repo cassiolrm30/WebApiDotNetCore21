@@ -1,0 +1,123 @@
+﻿<html>
+<head>
+    <title>Livros</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+</head>
+<body>
+    <h1>Livros</h1>
+    <form>
+        <table border="1" cellpadding="10">
+            <tr>
+                <td>ID :</td>
+                <td><select id="id"></select></td>
+            </tr>
+            <tr>
+                <td>Título :</td>
+                <td><input id="titulo" type="text" /></td>
+            </tr>
+            <tr>
+                <td>Autor :</td>
+                <td><input id="autor" type="text" /></td>
+            </tr>
+            <tr>
+                <td>Preço :</td>
+                <td><input id="preco" type="text" /></td>
+            </tr>
+            <tr>
+                <td>Data de Publicação :</td>
+                <td><input id="dataPublicacao" type="text" /></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="button" id="incluir" value="Incluir" />
+                    <input type="button" id="atualizar" value="Atualizar" />
+                    <input type="button" id="excluir" value="Excluir" />
+                </td>
+            </tr>
+        </table>
+        <br />
+        <div id="msg"></div>
+    </form>
+    <script>
+        $(document).ready(function ()
+        {
+            var options = {};
+            options.url = "/api/livros";
+            options.type = "GET";
+            options.dataType = "json";
+            options.success = function (data) { data.forEach(function (element) { $("#id").append("<option>" + element.livroID + "</option>"); }); };
+            options.error = function () { $("#msg").html("Erro ao chamar a API!"); };
+            $.ajax(options);
+
+            $("#id").change(function ()
+            {
+                var options = {};
+                options.url = "/api/livros/" + $("#id").val();
+                options.type = "GET";
+                options.dataType = "json";
+                options.success = function (data)
+                {
+                    $("#titulo").val(data.titulo);
+                    $("#autor").val(data.autor);
+                    $("#preco").val(data.preco);
+                    $("#dataPublicacao").val(data.dataPublicacao);
+                };
+                options.error = function () { $("#msg").html("Erro ao chamar a API!"); };
+                $.ajax(options);
+            });
+
+            $("#incluir").click(function ()
+            {
+                var options = {};
+                options.url = "/api/livros";
+                options.type = "POST";
+                var obj = {};
+                obj.titulo = $("#titulo").val();
+                obj.autor = $("#autor").val();
+                obj.preco = $("#preco").val();
+                obj.dataPublicacao = $("#dataPublicacao").val();
+
+                options.data = JSON.stringify(obj);
+                options.contentType = "application/json";
+                options.dataType = "html";
+
+                options.success = function (msg) { $("#msg").html(msg); };
+                options.error = function () { $("#msg").html("Erro ao chamar a API!"); };
+                $.ajax(options);
+            });
+
+            $("#atualizar").click(function ()
+            {
+                var options = {};
+                options.url = "/api/livros/" + $("#id").val();
+                options.type = "PUT";
+
+                var obj = {};
+                obj.livroID = $("#id").val();
+                obj.titulo = $("#titulo").val();
+                obj.autor = $("#autor").val();
+                obj.preco = $("#preco").val();
+                obj.dataPublicacao = $("#dataPublicacao").val();
+
+                options.data = JSON.stringify(obj);
+                options.contentType = "application/json";
+                options.dataType = "html";
+                options.success = function (msg) { $("#msg").html(msg); };
+                options.error = function () { $("#msg").html("Erro ao chamar a API!"); };
+                $.ajax(options);
+            });
+
+            $("#excluir").click(function ()
+            {
+                var options = {};
+                options.url = "/api/livros/" + $("#id").val();
+                options.type = "DELETE";
+                options.dataType = "html";
+                options.success = function (msg) { $("#msg").html(msg); };
+                options.error = function () { $("#msg").html("Erro ao chamar a API!"); };
+                $.ajax(options);
+            });
+        });
+    </script>
+</body>
+</html>
