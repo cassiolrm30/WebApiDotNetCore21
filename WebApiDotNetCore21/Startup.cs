@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using WebApiDotNetCore21.Models;
+using WebApiDotNetCore21.Repositories;
 
 namespace WebApiDotNetCore21
 {
@@ -23,6 +25,7 @@ namespace WebApiDotNetCore21
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddEntityFrameworkSqlServer();
             services.AddDbContext<Contexto>(options => options.UseSqlServer(Configuration.GetConnectionString("Conexao")));
+            services.AddTransient<ILivroRepositorio<Livro>, LivroRepositorio<Livro>>(); // Registrando o repositório
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

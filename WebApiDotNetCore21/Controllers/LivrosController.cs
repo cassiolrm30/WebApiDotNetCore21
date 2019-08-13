@@ -1,66 +1,51 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using WebApiDotNetCore21.Models;
+using WebApiDotNetCore21.Repositories;
 
 namespace WebApiDotNetCore21.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LivrosController : Controller
+    public class LivrosController : ControllerBase
     {
-        private readonly Contexto _contexto;
+        private readonly ILivroRepositorio<Livro> _repositorio;
 
-        public LivrosController(Contexto contexto)
+        public LivrosController(ILivroRepositorio<Livro> repositorio)
         {
-            _contexto = contexto;
+            _repositorio = repositorio;
         }
 
         [HttpGet]
-        public List<Livro> Get()
+        public IList<Livro> Get()
         {
-            List<Livro> resultado = new List<Livro>();
-            resultado.Add(new Livro(1, "Livro I", "Cássio Matos", 100M, DateTime.Today));
-            resultado.Add(new Livro(2, "Livro II", "Cássio Matos", 200M, DateTime.Today));
-            resultado.Add(new Livro(3, "Livro III", "Cássio Matos", 300M, DateTime.Today));
-            return resultado;
-            //return _contexto.Livros.ToList();
+            return _repositorio.GetAll();
         }
 
         [HttpGet("{id}")]
         public Livro Get(int id)
         {
-            List<Livro> resultado = new List<Livro>();
-            resultado.Add(new Livro(1, "Livro I", "Cássio Matos", 100M, DateTime.Today));
-            resultado.Add(new Livro(2, "Livro II", "Cássio Matos", 200M, DateTime.Today));
-            resultado.Add(new Livro(3, "Livro III", "Cássio Matos", 300M, DateTime.Today));
-            return resultado.FirstOrDefault(l => l.LivroID == id);
-            //return _contexto.Livros.Find(id);
+            return _repositorio.Get(id);
         }
 
         [HttpPost]
         public IActionResult Post([FromBody]Livro obj)
         {
-            _contexto.Livros.Add(obj);
-            _contexto.SaveChanges();
+            _repositorio.Post(obj);
             return new ObjectResult("Livro adicionado com sucesso!");
         }
 
         [HttpPut("{id}")]
         public IActionResult Put([FromBody]Livro obj)
         {
-            _contexto.Entry(obj).State = EntityState.Modified;
-            _contexto.SaveChanges();
+            _repositorio.Put(obj);
             return new ObjectResult("Livro alterado com sucesso!");
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            _contexto.Livros.Remove(_contexto.Livros.Find(id));
-            _contexto.SaveChanges();
+            _repositorio.Delete(id);
             return new ObjectResult("Livro excluido com sucesso!");
         }
     }
